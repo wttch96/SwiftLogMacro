@@ -3,5 +3,6 @@
 
 import Logging
 
+/// 宏定义
 @attached(member, names: named(logger))
 public macro Log(_ name: String? = nil) = #externalMacro(module: "SwiftLogMacroMacros", type: "SwiftLogMacroMacros")

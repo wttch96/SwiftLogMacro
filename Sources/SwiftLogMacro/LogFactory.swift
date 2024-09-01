@@ -8,24 +8,31 @@
 import Foundation
 import Logging
 
+/// 由于宏展开暂时无法使用写入 import 语句，所以定义此类，帮助生成 Logger，由于该类是宏模块内部的，
+/// 使用宏的时候一定会导入该类，宏展开后就可以直接调用而不会报错。
 public final class LogFactory: Sendable {
     public static let shared = LogFactory()
 
     private init() {
+        // 加载自定义的输出格式
         LoggingSystem.bootstrap(_LogHandler.init)
         print("已加载 SwiftLogMacro")
     }
 
+    /// 帮助创建 Logger 对象
     public func createLogger(label: String) -> Logger {
         return Logger(label: label)
     }
 }
 
+/// 添加一个日志输出方法，格式类似 SpringBoot 默认格式。
+/// 由于 xcode 输出不能输出带有颜色的文本，所以在日志最前面加上一个有色圆形: 🔵🟢🟠🟡🔴🟤等。
 struct _LogHandler: LogHandler {
     var metadata: Logger.Metadata = .init()
     var logLevel: Logger.Level = .info
     var label: String
     
+    /// 时间格式化为 yyyy-MM-dd HH:mm:ss.SSS
     private let dateFormatter: DateFormatter
     
     init(label: String) {
