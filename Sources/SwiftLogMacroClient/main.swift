@@ -1,8 +1,18 @@
 import SwiftLogMacro
 
-let a = 17
-let b = 25
+@Log
+class TestClass {
+    init() {
+        logger.info("TestClass")
+    }
+}
 
-let (result, code) = #stringify(a + b)
+@Log("测试")
+struct StructTest {
+    init() {
+        logger.info("TestStruct")
+    }
+}
 
-print("The value \(result) was produced by the code \"\(code)\"")
+let a = TestClass()
+let b = StructTest()

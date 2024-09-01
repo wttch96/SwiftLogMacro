@@ -3,31 +3,37 @@ import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 
-/// Implementation of the `stringify` macro, which takes an expression
-/// of any type and produces a tuple containing the value of that expression
-/// and the source code that produced the value. For example
-///
-///     #stringify(x + y)
-///
-///  will expand to
-///
-///     (x + y, "x + y")
-public struct StringifyMacro: ExpressionMacro {
-    public static func expansion(
-        of node: some FreestandingMacroExpansionSyntax,
-        in context: some MacroExpansionContext
-    ) -> ExprSyntax {
-        guard let argument = node.arguments.first?.expression else {
-            fatalError("compiler bug: the macro does not have any arguments")
+public struct SwiftLogMacroMacros: MemberMacro {
+    public static func expansion(of node: AttributeSyntax, providingMembersOf declaration: some DeclGroupSyntax, in context: some MacroExpansionContext) throws -> [DeclSyntax] {
+        var label: String? = nil
+        // 获取参数
+        if let argumentList = node.arguments?.as(LabeledExprListSyntax.self) {
+            // 提取第一个参数（level）
+            let labelArgument = argumentList.first?.expression
+            label = labelArgument?.description.trimmingCharacters(in: .whitespacesAndNewlines)
+        } else {
+            var declarationName: String? = declaration.as(ClassDeclSyntax.self)?.name.text
+            declarationName = declarationName ?? declaration.as(StructDeclSyntax.self)?.name.text
+            label = "\"\(declarationName ?? "Default")\""
         }
 
-        return "(\(argument), \(literal: argument.description))"
+        // 默认使用类名作为 logger 标签
+        let loggerLabel: String = label ?? "Default"
+
+        // 生成 logger 属性，使用提供的 name 或默认的类名
+        let loggerProperty = """
+        var logger = LogFactory.shared.createLogger(label: \(loggerLabel))
+        """
+
+        return try [
+            DeclSyntax(VariableDeclSyntax(SyntaxNodeString(stringLiteral: loggerProperty))),
+        ]
     }
 }
 
 @main
 struct SwiftLogMacroPlugin: CompilerPlugin {
     let providingMacros: [Macro.Type] = [
-        StringifyMacro.self,
+        SwiftLogMacroMacros.self,
     ]
 }
