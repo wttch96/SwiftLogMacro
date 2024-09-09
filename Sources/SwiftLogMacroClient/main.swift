@@ -4,15 +4,25 @@ import SwiftLogMacro
 class TestClass {
     init() {
         logger.info("TestClass")
+        logger.debug("TestClass")
     }
 }
 
-@Log("测试")
+@Log("测试Label")
+class TestLabelClass {
+    init() {
+        logger.info("TestClass")
+        logger.debug("TestClass")
+    }
+}
+
+@Log("测试", level: .debug)
 struct StructTest {
     init() {
-        logger.info("TestStruct")
+        logger.debug("TestStruct")
     }
 }
 
 let a = TestClass()
 let b = StructTest()
+let c = TestLabelClass()

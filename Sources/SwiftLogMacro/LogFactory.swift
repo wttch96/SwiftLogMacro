@@ -20,8 +20,10 @@ public final class LogFactory: Sendable {
     }
 
     /// 帮助创建 Logger 对象
-    public func createLogger(label: String) -> Logger {
-        return Logger(label: label)
+    public func createLogger(label: String, level: Logger.Level = .info) -> Logger {
+        var logger = Logger(label: label)
+        logger.logLevel = level
+        return logger
     }
 }
 

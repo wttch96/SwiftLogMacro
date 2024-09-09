@@ -2,7 +2,7 @@
 
 他会帮助在类内部生成一个 `logger: Logger`的变量，类似`@Slf4j`。
 
-```
+```swift
 import SwiftLogMacro
 
 @Log
@@ -14,7 +14,7 @@ class TestClass {
 ```
 
 宏展开之后为:
-```
+```swift
 import SwiftLogMacro
 
 class TestClass {
